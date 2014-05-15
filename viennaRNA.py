@@ -4,30 +4,30 @@
 import ctypes
 import os
 
-# typedef struct
-# {
-#     char *sequence;
-#     char *structure;
-#     float mfe;
-#     float gfe;
-# } seqdata;
-class seqdata(ctypes.Structure):
-    _fields_ = [('sequence', ctypes.c_char_p), ('structure', ctypes.c_char_p),
-                ('mfe',ctypes.c_float), ('gfe',ctypes.c_float)]
+# char* seq_fold(char*, float*)
+__seq_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).seq_fold
+__seq_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
+__seq_fold.restype = ctypes.c_char_p
 
-# void sequencefold(seqdata *s)
-seqfold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).sequencefold
-seqfold.argtypes = [ctypes.POINTER(seqdata)]
-seqfold.restype = None
+def seq_fold(sequence):
+    mfe = ctypes.c_float()
+    structure = __seq_fold(sequence, ctypes.byref(mfe))
+    return (structure, mfe)
 
-# void sequencepf(seqdata *s)
-seqpf = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).sequencepf
-seqpf.argtypes = [ctypes.POINTER(seqdata)]
-seqpf.restype = None
+# char* seq_pf_fold(char*, float*)
+__seq_pf_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).seq_pf_fold
+__seq_pf_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
+__seq_pf_fold.restype = ctypes.c_char_p
+
+def seq_pf_fold(sequence):
+    gfe = ctypes.c_float()
+    structure = __seq_pf_fold(sequence, ctypes.byref(gfe))
+    return (structure, gfe)
 
 if __name__ == '__main__':
 
-    sd = seqdata(sequence='CGCAGGGAUACCCGCGCC')
-    seqfold(ctypes.byref(sd))
-    seqpf(ctypes.byref(sd))
-    print('%s\n%s\n%f\n%f\n' % (sd.sequence, sd.structure, sd.mfe, sd.gfe))
+    sequence = 'CGCAGGGAUACCCGCGCC'
+    structure, mfe = seq_fold(sequence)
+    print('%s\n%s' % (sequence, structure))
+    structure, gfe = seq_pf_fold(sequence)
+    print('%s\n%f, %f' % (structure, mfe.value, gfe.value))

@@ -13,41 +13,33 @@
 #include  "ViennaRNA/profiledist.h"
 
 // gcc viennarna.c -dynamiclib -o viennarna.dylib -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
-// gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic 
+// gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic
 
-typedef struct
+char* seq_fold(char* sequence, float* mfe)
 {
-    char *sequence;
-    char *structure;
-    float mfe;
-    float gfe;
-}
-seqdata;
-
-void sequencefold(seqdata *s)
-{
-    char *_struct = (char *)space(sizeof(char) * (strlen(s->sequence) + 1));
-    s->mfe = fold(s->sequence, _struct);
-    s->structure = _struct;
+    char* structure = (char*)space(sizeof(char) * (strlen(sequence) + 1));
+    *mfe = fold(sequence, structure);
     free_arrays();
+    return structure;
 }
 
-void sequencepf(seqdata *s)
+char* seq_pf_fold(char* sequence, float* gfe)
 {
-    char *_struct = (char *)space(sizeof(char) * (strlen(s->sequence) + 1));
-    s->gfe = pf_fold(s->sequence, _struct);
+    char* structure = (char*)space(sizeof(char) * (strlen(sequence) + 1));
+    *gfe = pf_fold(sequence, structure);
     free_pf_arrays();
+    return structure;
 }
 
 int main()
 {
-    seqdata s;
-    s.sequence = "CGCAGGGAUACCCGCGCC";
-    sequencefold(&s);
-    printf("%s\n", s.sequence);
-    printf("%s\n", s.structure);
-    sequencepf(&s);
-    printf("%f, %f\n", s.mfe, s.gfe);
-    float kT = (temperature + 273.15) * 1.98717 / 1000.;  /* kT in kcal/mol */
-    printf("%f\n", exp(-(s.mfe - s.gfe) / kT));
+    char *sequence = "CGCAGGGAUACCCGCGCC";
+    char* structure;
+    float mfe, gfe;
+    structure = seq_fold(sequence, &mfe);
+    printf("%s\n", sequence);
+    printf("%s\n", structure);
+    structure = seq_pf_fold(sequence, &gfe);
+    printf("%s\n", structure);
+    printf("%f, %f\n", mfe, gfe);
 }
