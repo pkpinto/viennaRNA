@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from .__version__ import __version_info__
 from .__version__ import __version__
 
 __all__ = ['seq_fold', 'seq_pf_fold', 'seq_subopt']
