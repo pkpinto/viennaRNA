@@ -22,7 +22,7 @@ def seq_fold(sequence):
 
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
     free_c_pointer(c_structure)
-    return (structure, mfe)
+    return (structure, mfe.value)
 
 # char* seq_pf_fold(char*, float*)
 __seq_pf_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_pf_fold
@@ -37,7 +37,7 @@ def seq_pf_fold(sequence):
 
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
     free_c_pointer(c_structure)
-    return (structure, gfe)
+    return (structure, gfe.value)
 
 # typedef struct {
 #     float energy;
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     print('%s\n%s' % (sequence, structure))
 
     structure, gfe = seq_pf_fold(sequence)
-    print('%s\n%f, %f' % (structure, mfe.value, gfe.value))
+    print('%s\n%f, %f' % (structure, mfe, gfe))
 
     sol_tuples = seq_subopt(sequence, 4.0)
     for s in sol_tuples:
