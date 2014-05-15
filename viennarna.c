@@ -8,8 +8,10 @@
 #include  "ViennaRNA/part_func.h" // pf_fold
 #include  "ViennaRNA/subopt.h" // subopt
 
-// gcc viennarna.c -dynamiclib -o viennarna.dylib -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
-// gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic
+// mac
+ // gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
+ // linux
+ // gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic -std=c99
 
 char* seq_fold(char* sequence, float* mfe)
 {
