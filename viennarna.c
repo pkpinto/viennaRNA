@@ -36,7 +36,7 @@ SOLUTION* seq_subopt(char* sequence, float delta)
 
 int main()
 {
-    char *sequence = "CGCAGGGAUACCCGCGCC";
+    char* sequence = "CGCAGGGAUACCCGCGCC";
     char* structure;
     float mfe, gfe;
     structure = seq_fold(sequence, &mfe);
@@ -46,6 +46,6 @@ int main()
     printf("%s\n", structure);
     printf("%f, %f\n", mfe, gfe);
     SOLUTION* sol = seq_subopt(sequence, 4.0);
-    for(SOLUTION *s = sol; s->structure != NULL; s++)
+    for(SOLUTION* s = sol; s->structure != NULL; s++)
         printf("%f, %s\n", s->energy, s->structure);
 }
