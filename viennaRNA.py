@@ -10,7 +10,7 @@ free_c_pointer = ctypes.CDLL(ctypes.util.find_library('c')).free
 free_c_pointer.argtypes = [ctypes.c_void_p,]
 
 # char* seq_fold(char*, float*)
-__seq_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).seq_fold
+__seq_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_fold
 __seq_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
 # if restype is c_char_p python will convert it to a str and no free'ing is possible
 __seq_fold.restype = ctypes.c_void_p
@@ -25,7 +25,7 @@ def seq_fold(sequence):
     return (structure, mfe)
 
 # char* seq_pf_fold(char*, float*)
-__seq_pf_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).seq_pf_fold
+__seq_pf_fold = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_pf_fold
 __seq_pf_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
 # if restype is c_char_p python will convert it to a str and no free'ing is possible
 __seq_pf_fold.restype = ctypes.c_void_p
@@ -47,7 +47,7 @@ class __SOLUTION(ctypes.Structure):
     _fields_ = [('energy', ctypes.c_float), ('c_structure', ctypes.c_void_p)]
 
 # SOLUTION* seq_subopt(char*, float)
-__seq_subopt = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.dylib')).seq_subopt
+__seq_subopt = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_subopt
 __seq_subopt.argtypes = [ctypes.c_char_p, ctypes.c_float]
 __seq_subopt.restype = ctypes.POINTER(__SOLUTION)
 
