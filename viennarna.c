@@ -2,15 +2,11 @@
 #include  <stdlib.h>
 #include  <math.h>
 #include  <string.h>
+
 #include  "ViennaRNA/utils.h"
-#include  "ViennaRNA/fold_vars.h"
-#include  "ViennaRNA/fold.h"
-#include  "ViennaRNA/part_func.h"
-#include  "ViennaRNA/inverse.h"
-#include  "ViennaRNA/RNAstruct.h"
-#include  "ViennaRNA/treedist.h"
-#include  "ViennaRNA/stringdist.h"
-#include  "ViennaRNA/profiledist.h"
+#include  "ViennaRNA/fold.h" // fold
+#include  "ViennaRNA/part_func.h" // pf_fold
+#include  "ViennaRNA/subopt.h" // subopt
 
 // gcc viennarna.c -dynamiclib -o viennarna.dylib -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
 // gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic
@@ -31,6 +27,13 @@ char* seq_pf_fold(char* sequence, float* gfe)
     return structure;
 }
 
+SOLUTION* seq_subopt(char* sequence, float delta)
+{
+    int delta_intervals = (int)(delta / 0.01);
+    SOLUTION* sol = subopt(sequence, NULL, delta_intervals, NULL);
+    return sol;
+}
+
 int main()
 {
     char *sequence = "CGCAGGGAUACCCGCGCC";
@@ -42,4 +45,7 @@ int main()
     structure = seq_pf_fold(sequence, &gfe);
     printf("%s\n", structure);
     printf("%f, %f\n", mfe, gfe);
+    SOLUTION* sol = seq_subopt(sequence, 4.0);
+    for(SOLUTION *s = sol; s->structure != NULL; s++)
+        printf("%f, %s\n", s->energy, s->structure);
 }
