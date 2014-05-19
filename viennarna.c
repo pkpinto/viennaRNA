@@ -7,6 +7,7 @@
 #include  "ViennaRNA/fold.h" // fold
 #include  "ViennaRNA/part_func.h" // pf_fold
 #include  "ViennaRNA/subopt.h" // subopt
+#include  "ViennaRNA/fold_vars.h" // temperature
 
 // mac
 // gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
@@ -41,6 +42,14 @@ SOLUTION* seq_subopt(const char* sequence, float delta)
     return sol;
 }
 
+float seq_eval(const char *sequence, const char *structure)
+{
+    return energy_of_structure(sequence, structure, 0);
+}
+
+float get_T(void) { return temperature; }
+void set_T(float T) { temperature = T; }
+
 int main()
 {
     const char* sequence = "CGCAGGGAUACCCGCGCC";
@@ -55,4 +64,8 @@ int main()
     SOLUTION* sol = seq_subopt(sequence, 4.0);
     for(SOLUTION* s = sol; s->structure != NULL; s++)
         printf("%f, %s\n", s->energy, s->structure);
+    printf("%f\n", seq_eval(sequence, "(((.((.....))))).."));
+    printf("%f\n", get_T());
+    set_T(15.0);
+    printf("%f\n", get_T());
 }

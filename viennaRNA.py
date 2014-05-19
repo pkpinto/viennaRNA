@@ -64,6 +64,25 @@ def seq_subopt(sequence, delta):
 
     return sol_tuples
 
+# float seq_eval(char*, char*)
+__seq_eval = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_eval
+__seq_eval.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+__seq_eval.restype = ctypes.c_float
+
+def seq_eval(sequence, structure):
+
+    return (structure, __seq_eval(sequence, structure))
+
+# float get_T(void)
+__get_T = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).get_T
+__get_T.restype = ctypes.c_float
+def get_T(): return __get_T()
+
+# void set_T(float)
+__set_T = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).set_T
+__set_T.argtypes = [ctypes.c_float,]
+def set_T(temperature): __set_T(temperature)
+
 if __name__ == '__main__':
 
     sequence = 'CGCAGGGAUACCCGCGCC'
@@ -76,3 +95,9 @@ if __name__ == '__main__':
     sol_tuples = seq_subopt(sequence, 4.0)
     for s in sol_tuples:
         print('%f, %s' % (s[1], s[0]))
+
+    print('%f' % seq_eval(sequence, '.((.(((...)))))...')[1])
+
+    print('%f' % get_T());
+    set_T(15.0);
+    print('%f' % get_T());
