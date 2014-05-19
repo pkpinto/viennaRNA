@@ -9,11 +9,11 @@
 #include  "ViennaRNA/subopt.h" // subopt
 
 // mac
- // gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
- // linux
- // gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic -std=c99
+// gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
+// linux
+// gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic -std=c99
 
-char* seq_fold(char* sequence, float* mfe)
+char* seq_fold(const char* sequence, float* mfe)
 {
     char* structure = (char*)space(sizeof(char) * (strlen(sequence) + 1));
     *mfe = fold(sequence, structure);
@@ -21,7 +21,7 @@ char* seq_fold(char* sequence, float* mfe)
     return structure;
 }
 
-char* seq_pf_fold(char* sequence, float* gfe)
+char* seq_pf_fold(const char* sequence, float* gfe)
 {
     char* structure = (char*)space(sizeof(char) * (strlen(sequence) + 1));
     *gfe = pf_fold(sequence, structure);
@@ -29,16 +29,21 @@ char* seq_pf_fold(char* sequence, float* gfe)
     return structure;
 }
 
-SOLUTION* seq_subopt(char* sequence, float delta)
+SOLUTION* seq_subopt(const char* sequence, float delta)
 {
     int delta_intervals = (int)(delta / 0.01);
-    SOLUTION* sol = subopt(sequence, NULL, delta_intervals, NULL);
+    // subopt takes the sequence as a char* thought it should be a const char*
+    // create a temporary char* where the sequence can be stored
+    char* seq = malloc(strlen(sequence) + 1);
+    strcpy(seq, sequence);
+    SOLUTION* sol = subopt(seq, NULL, delta_intervals, NULL);
+    free(seq);
     return sol;
 }
 
 int main()
 {
-    char* sequence = "CGCAGGGAUACCCGCGCC";
+    const char* sequence = "CGCAGGGAUACCCGCGCC";
     char* structure;
     float mfe, gfe;
     structure = seq_fold(sequence, &mfe);
