@@ -64,6 +64,15 @@ def seq_subopt(sequence, delta):
 
     return sol_tuples
 
+# float seq_eval(char*, char*)
+__seq_eval = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_eval
+__seq_eval.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+__seq_eval.restype = ctypes.c_float
+
+def seq_eval(sequence, structure):
+
+    return (structure, __seq_eval(sequence, structure))
+
 if __name__ == '__main__':
 
     sequence = 'CGCAGGGAUACCCGCGCC'
@@ -76,3 +85,5 @@ if __name__ == '__main__':
     sol_tuples = seq_subopt(sequence, 4.0)
     for s in sol_tuples:
         print('%f, %s' % (s[1], s[0]))
+
+    print('%f' % seq_eval(sequence, '.((.(((...)))))...')[1])

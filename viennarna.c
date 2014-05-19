@@ -41,6 +41,11 @@ SOLUTION* seq_subopt(const char* sequence, float delta)
     return sol;
 }
 
+float seq_eval(const char *sequence, const char *structure)
+{
+    return energy_of_structure(sequence, structure, 0);
+}
+
 int main()
 {
     const char* sequence = "CGCAGGGAUACCCGCGCC";
@@ -55,4 +60,5 @@ int main()
     SOLUTION* sol = seq_subopt(sequence, 4.0);
     for(SOLUTION* s = sol; s->structure != NULL; s++)
         printf("%f, %s\n", s->energy, s->structure);
+    printf("%f\n", seq_eval(sequence, "(((.((.....))))).."));
 }
