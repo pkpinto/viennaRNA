@@ -4,6 +4,7 @@
 import ctypes
 import ctypes.util
 import os
+from collections import deque
 
 # free memory allocated in c
 free_c_pointer = ctypes.CDLL(ctypes.util.find_library('c')).free
@@ -63,6 +64,30 @@ def seq_subopt(sequence, delta):
     free_c_pointer(sol)
 
     return sol_tuples
+
+def str_base_pairs(structure):
+
+    open_brackets = deque()
+    pairings = set()
+
+    for i,s in enumerate(structure):
+        if s == '(':
+            open_brackets.append(i)
+        elif s == ')':
+            pairings.add((open_brackets.pop(), i))
+
+    return pairings
+
+__possible_pairs_of = {'a':{'u'}, 'c':{'g'}, 'g':{'c','u'}, 'u':{'a','g'},\
+                   'A':{'U'}, 'C':{'G'}, 'G':{'C','U'}, 'U':{'A','G'}}
+
+def seq_str_compatible(sequence, structure):
+
+    for pair in str_base_pairs(structure):
+        if sequence[pair[0]] not in __possible_pairs_of[sequence[pair[1]]]:
+            return False
+
+    return True
 
 # float seq_eval(const char*, const char*)
 __seq_eval = ctypes.CDLL(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')).seq_eval
@@ -147,8 +172,14 @@ if __name__ == '__main__':
 
     print('')
 
-    # Take a not so different sequence with a different optimal structure
+    # Check compatiblity of sequence and structure
     seed_seq = 'AAUAGGGAUACCCGCGCC'
+    print('%s %f' % (seq_str_compatible(sequence, test_str), seq_eval(sequence, test_str)))
+    print('%s %f' % (seq_str_compatible(seed_seq, test_str), seq_eval(seed_seq, test_str)))
+
+    print('')
+
+    # Take a not so different sequence with a different optimal structure
     structure, mfe = seq_fold(seed_seq)
     print('%s %s %f' % (seed_seq, structure, mfe))
 
