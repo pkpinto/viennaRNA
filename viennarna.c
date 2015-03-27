@@ -1,18 +1,20 @@
-#include  <stdio.h>
-#include  <stdlib.h>
-#include  <math.h>
-#include  <string.h>
-#include  <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <time.h>
 
-#include  "ViennaRNA/utils.h"
-#include  "ViennaRNA/fold.h" // fold
-#include  "ViennaRNA/part_func.h" // pf_fold
-#include  "ViennaRNA/subopt.h" // subopt
-#include  "ViennaRNA/fold_vars.h" // temperature
-#include  "ViennaRNA/inverse.h" // inverse
+#include "ViennaRNA/utils.h"
+#include "ViennaRNA/fold.h"  // fold
+#include "ViennaRNA/part_func.h"  // pf_fold
+#include "ViennaRNA/subopt.h"   // subopt
+#include "ViennaRNA/fold_vars.h"  // temperature
+#include "ViennaRNA/inverse.h"  // inverse
 
+// Build command:
 // mac
-// gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/ -L /usr/local/lib/ -lm -lRNA
+// gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/
+//         -L /usr/local/lib/ -lm -lRNA
 // linux
 // gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic -std=c99
 
@@ -72,7 +74,8 @@ float str_inverse(char* sequence, const char* structure,
 }
 
 float str_pf_inverse(char* sequence, const char* structure,
-                     unsigned int rng_seed, int give_up_switch, float delta_to_target)
+                     unsigned int rng_seed, int give_up_switch,
+                     float delta_to_target)
 {
     give_up = give_up_switch;
     final_cost = delta_to_target;
@@ -100,7 +103,7 @@ int main()
 
     // Find suboptimal structures
     SOLUTION* sol = seq_subopt(sequence, 4.0);
-    for(SOLUTION* s = sol; s->structure != NULL; s++)
+    for (SOLUTION* s = sol; s->structure != NULL; s++)
     {
         printf("%s %s %f\n", sequence, s->structure, s->energy);
         free(s->structure);
