@@ -6,8 +6,8 @@ import ctypes.util
 import os
 
 # free memory allocated in c
-free_c_pointer = ctypes.CDLL(ctypes.util.find_library('c')).free
-free_c_pointer.argtypes = [ctypes.c_void_p, ]
+__free_c_pointer = ctypes.CDLL(ctypes.util.find_library('c')).free
+__free_c_pointer.argtypes = [ctypes.c_void_p, ]
 
 
 # compiled library file path
@@ -31,7 +31,7 @@ def seq_fold(sequence):
     c_structure = __seq_fold(sequence, ctypes.byref(mfe))
 
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
-    free_c_pointer(c_structure)
+    __free_c_pointer(c_structure)
     return (structure, mfe.value)
 
 
@@ -51,7 +51,7 @@ def seq_pf_fold(sequence):
     c_structure = __seq_pf_fold(sequence, ctypes.byref(gfe))
 
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
-    free_c_pointer(c_structure)
+    __free_c_pointer(c_structure)
     return (structure, gfe.value)
 
 
@@ -84,8 +84,8 @@ def seq_subopt(sequence, delta):
             break
         sol_tuples.add((ctypes.cast(s.c_structure, ctypes.c_char_p).value,
                        s.energy))
-        free_c_pointer(s.c_structure)
-    free_c_pointer(sol)
+        __free_c_pointer(s.c_structure)
+    __free_c_pointer(sol)
 
     return sol_tuples
 
