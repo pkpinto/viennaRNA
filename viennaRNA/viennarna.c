@@ -11,13 +11,6 @@
 #include "ViennaRNA/fold_vars.h"  // temperature
 #include "ViennaRNA/inverse.h"  // inverse
 
-// Build command:
-// mac
-// gcc viennarna.c -dynamiclib -o viennarna.so -I /usr/local/include/
-//         -L /usr/local/lib/ -lm -lRNA
-// linux
-// gcc viennarna.c -shared -o viennarna.so -lm -lRNA -fopenmp -fpic -std=c99
-
 char* seq_fold(const char* sequence, float* mfe)
 {
     char* structure = (char*)space(sizeof(char) * (strlen(sequence) + 1));
@@ -84,7 +77,7 @@ float str_pf_inverse(char* sequence, const char* structure,
     return inverse_pf_fold(sequence, structure);
 }
 
-int main()
+int main(void)
 {
     // Optimal fold
     const char* sequence = "CGCAGGGAUACCCGCGCC";

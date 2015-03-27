@@ -16,7 +16,9 @@ if platform == 'darwin':
                        libraries=['RNA'])
 elif platform == 'linux2':
     module = Extension('viennaRNA.viennarna', ['viennaRNA/viennarna.c'],
-                       libraries=['RNA'])
+                       libraries=['RNA'],
+                       extra_compile_args=['-std=c99'],
+                       extra_link_args=['-fopenmp'])
 else:
     raise OSError('OS not supported.')
 
