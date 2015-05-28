@@ -14,6 +14,16 @@ _vienna_clib = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                             'viennarna.so')
 
 
+# float get_T(void)
+_get_T = ctypes.CDLL(_vienna_clib).get_T
+_get_T.restype = ctypes.c_float
+
+
+# void set_T(float)
+_set_T = ctypes.CDLL(_vienna_clib).set_T
+_set_T.argtypes = [ctypes.c_float, ]
+
+
 # char* seq_fold(const char*, float*)
 _seq_fold = ctypes.CDLL(_vienna_clib).seq_fold
 _seq_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
@@ -22,15 +32,21 @@ _seq_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
 _seq_fold.restype = ctypes.c_void_p
 
 
-def seq_fold(sequence):
+def seq_fold(sequence, T=37.0):
     """
     Wrapper to seq_fold
     """
+    default_T = _get_T()
+    if T != default_T:
+        _set_T(T)
+
     mfe = ctypes.c_float()
     c_structure = _seq_fold(sequence, ctypes.byref(mfe))
-
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
     _free_c_pointer(c_structure)
+
+    if T != default_T:
+        _set_T(default_T)
     return (structure, mfe.value)
 
 
@@ -42,15 +58,21 @@ _seq_pf_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
 _seq_pf_fold.restype = ctypes.c_void_p
 
 
-def seq_pf_fold(sequence):
+def seq_pf_fold(sequence, T=37.0):
     """
     Wrapper to seq_pf_fold
     """
+    default_T = _get_T()
+    if T != default_T:
+        _set_T(T)
+
     gfe = ctypes.c_float()
     c_structure = _seq_pf_fold(sequence, ctypes.byref(gfe))
-
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
     _free_c_pointer(c_structure)
+
+    if T != default_T:
+        _set_T(default_T)
     return (structure, gfe.value)
 
 
@@ -71,10 +93,14 @@ _seq_subopt.argtypes = [ctypes.c_char_p, ctypes.c_float]
 _seq_subopt.restype = ctypes.POINTER(_SOLUTION)
 
 
-def seq_subopt(sequence, delta):
+def seq_subopt(sequence, delta, T=37.0):
     """
     Wrapper to seq_subopt
     """
+    default_T = _get_T()
+    if T != default_T:
+        _set_T(T)
+
     sol = _seq_subopt(sequence, ctypes.c_float(delta))
 
     sol_tuples = set()
@@ -86,6 +112,8 @@ def seq_subopt(sequence, delta):
         _free_c_pointer(s.c_structure)
     _free_c_pointer(sol)
 
+    if T != default_T:
+        _set_T(default_T)
     return sol_tuples
 
 
@@ -95,35 +123,19 @@ _seq_eval.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 _seq_eval.restype = ctypes.c_float
 
 
-def seq_eval(sequence, structure):
+def seq_eval(sequence, structure, T=37.0):
     """
     Wrapper to seq_eval
     """
-    return _seq_eval(sequence, structure)
+    default_T = _get_T()
+    if T != default_T:
+        _set_T(T)
 
+    energy = _seq_eval(sequence, structure)
 
-# float get_T(void)
-_get_T = ctypes.CDLL(_vienna_clib).get_T
-_get_T.restype = ctypes.c_float
-
-
-def get_T():
-    """
-    Wrapper to get_T
-    """
-    return _get_T()
-
-
-# void set_T(float)
-_set_T = ctypes.CDLL(_vienna_clib).set_T
-_set_T.argtypes = [ctypes.c_float, ]
-
-
-def set_T(temperature):
-    """
-    Wrapper to set_T
-    """
-    _set_T(temperature)
+    if T != default_T:
+        _set_T(default_T)
+    return energy
 
 
 # float str_inverse(char*, const char*, int)
@@ -133,10 +145,14 @@ _str_inverse.argtypes = [ctypes.c_char_p, ctypes.c_char_p,
 _str_inverse.restype = ctypes.c_float
 
 
-def str_inverse(seed, structure, rng_seed=None, give_up=False):
+def str_inverse(seed, structure, rng_seed=None, give_up=False, T=37.0):
     """
     Wrapper to str_inverse
     """
+    default_T = _get_T()
+    if T != default_T:
+        _set_T(T)
+
     if not rng_seed:
         # seeding identical to cpython random.seed
         import time
@@ -145,6 +161,8 @@ def str_inverse(seed, structure, rng_seed=None, give_up=False):
     sequence = ctypes.create_string_buffer(seed)
     dist = _str_inverse(sequence, structure, rng_seed, 1 if give_up else 0)
 
+    if T != default_T:
+        _set_T(default_T)
     return (sequence.value, dist)
 
 
@@ -157,10 +175,14 @@ _str_pf_inverse.restype = ctypes.c_float
 
 
 def str_pf_inverse(seed, structure, rng_seed=None, give_up=False,
-                   delta_target=0.0):
+                   delta_target=0.0, T=37.0):
     """
     Wrapper to str_pf_inverse
     """
+    default_T = _get_T()
+    if T != default_T:
+        _set_T(T)
+
     if not rng_seed:
         # seeding identical to cpython random.seed
         import time
@@ -170,4 +192,6 @@ def str_pf_inverse(seed, structure, rng_seed=None, give_up=False,
     dist = _str_pf_inverse(sequence, structure, rng_seed,
                            1 if give_up else 0, delta_target)
 
+    if T != default_T:
+        _set_T(default_T)
     return (sequence.value, dist)
