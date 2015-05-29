@@ -93,7 +93,7 @@ _seq_subopt.argtypes = [ctypes.c_char_p, ctypes.c_float]
 _seq_subopt.restype = ctypes.POINTER(_SOLUTION)
 
 
-def seq_subopt(sequence, delta, T=37.0):
+def seq_subopt(sequence, delta, sort=False, T=37.0):
     """
     Wrapper to seq_subopt
     """
@@ -114,7 +114,11 @@ def seq_subopt(sequence, delta, T=37.0):
 
     if T != default_T:
         _set_T(default_T)
-    return sol_tuples
+
+    if sort:
+        return sorted(sol_tuples, key=lambda s: s[1])
+    else:
+        return sol_tuples
 
 
 # float seq_eval(const char*, const char*)

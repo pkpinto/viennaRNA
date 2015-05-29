@@ -4,12 +4,12 @@
 #include <string.h>
 #include <time.h>
 
-#include "ViennaRNA/utils.h"
-#include "ViennaRNA/fold.h"  // fold
-#include "ViennaRNA/part_func.h"  // pf_fold
-#include "ViennaRNA/subopt.h"   // subopt
-#include "ViennaRNA/fold_vars.h"  // temperature
-#include "ViennaRNA/inverse.h"  // inverse
+#include <ViennaRNA/utils.h>
+#include <ViennaRNA/fold.h>  // fold
+#include <ViennaRNA/part_func.h>  // pf_fold
+#include <ViennaRNA/subopt.h>   // subopt
+#include <ViennaRNA/fold_vars.h>  // temperature
+#include <ViennaRNA/inverse.h>  // inverse
 
 char* seq_fold(const char* sequence, float* mfe)
 {
