@@ -26,4 +26,4 @@ setup.py install" to build and install the library into the local site-packages
 folder.
 
 Tests are available to run in the test folder. Simply run "python -m unittest 
-discover" from the project root. These are installed in the procedure above.
+discover" from the project root. These are not installed in the procedure above.
