@@ -1,5 +1,3 @@
-# coding: utf-8
-
 import ctypes
 import ctypes.util
 import os
@@ -10,8 +8,7 @@ _free_c_pointer.argtypes = [ctypes.c_void_p, ]
 
 
 # compiled library file path
-_vienna_clib = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            'viennarna.so')
+_vienna_clib = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')
 
 
 # float get_T(void)
@@ -41,13 +38,13 @@ def seq_fold(sequence, T=37.0):
         _set_T(T)
 
     mfe = ctypes.c_float()
-    c_structure = _seq_fold(sequence, ctypes.byref(mfe))
+    c_structure = _seq_fold(sequence.encode('ascii'), ctypes.byref(mfe))
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
     _free_c_pointer(c_structure)
 
     if T != default_T:
         _set_T(default_T)
-    return (structure, mfe.value)
+    return (structure.decode('utf-8'), mfe.value)
 
 
 # char* seq_pf_fold(const char*, float*)
@@ -67,13 +64,13 @@ def seq_pf_fold(sequence, T=37.0):
         _set_T(T)
 
     gfe = ctypes.c_float()
-    c_structure = _seq_pf_fold(sequence, ctypes.byref(gfe))
+    c_structure = _seq_pf_fold(sequence.encode('ascii'), ctypes.byref(gfe))
     structure = ctypes.cast(c_structure, ctypes.c_char_p).value
     _free_c_pointer(c_structure)
 
     if T != default_T:
         _set_T(default_T)
-    return (structure, gfe.value)
+    return (structure.decode('utf-8'), gfe.value)
 
 
 class _SOLUTION(ctypes.Structure):
@@ -101,14 +98,13 @@ def seq_subopt(sequence, delta, sort=False, T=37.0):
     if T != default_T:
         _set_T(T)
 
-    sol = _seq_subopt(sequence, ctypes.c_float(delta))
+    sol = _seq_subopt(sequence.encode('ascii'), ctypes.c_float(delta))
 
     sol_tuples = set()
     for s in sol:
         if s.c_structure is None:
             break
-        sol_tuples.add((ctypes.cast(s.c_structure, ctypes.c_char_p).value,
-                       s.energy))
+        sol_tuples.add((ctypes.cast(s.c_structure, ctypes.c_char_p).value.decode('utf-8'), s.energy))
         _free_c_pointer(s.c_structure)
     _free_c_pointer(sol)
 
@@ -135,7 +131,7 @@ def seq_eval(sequence, structure, T=37.0):
     if T != default_T:
         _set_T(T)
 
-    energy = _seq_eval(sequence, structure)
+    energy = _seq_eval(sequence.encode('ascii'), structure.encode('ascii'))
 
     if T != default_T:
         _set_T(default_T)
@@ -162,12 +158,12 @@ def str_inverse(seed, structure, rng_seed=None, give_up=False, T=37.0):
         import time
         rng_seed = long(time.time() * 256)  # use fractional seconds
 
-    sequence = ctypes.create_string_buffer(seed)
-    dist = _str_inverse(sequence, structure, rng_seed, 1 if give_up else 0)
+    sequence = ctypes.create_string_buffer(str(seed).encode('ascii'))
+    dist = _str_inverse(sequence, structure.encode('ascii'), rng_seed, 1 if give_up else 0)
 
     if T != default_T:
         _set_T(default_T)
-    return (sequence.value, dist)
+    return (sequence.value.decode('utf-8'), dist)
 
 
 # float str_pf_inverse(char*, const char*, int, float)
@@ -193,9 +189,9 @@ def str_pf_inverse(seed, structure, rng_seed=None, give_up=False,
         rng_seed = long(time.time() * 256)  # use fractional seconds
 
     sequence = ctypes.create_string_buffer(seed)
-    dist = _str_pf_inverse(sequence, structure, rng_seed,
+    dist = _str_pf_inverse(sequence.encode('ascii'), structure.encode('ascii'), rng_seed,
                            1 if give_up else 0, delta_target)
 
     if T != default_T:
         _set_T(default_T)
-    return (sequence.value, dist)
+    return (sequence.value.decode('utf-8'), dist)

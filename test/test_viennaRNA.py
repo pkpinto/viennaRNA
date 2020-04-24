@@ -17,30 +17,24 @@ class viennaRNATest(unittest.TestCase):
         sequence = 'CGCAGGGAUACCCGCGCC'
 
         structure, mfe = RNA.seq_fold(sequence)
+
         self.assertTrue(structure == '(((.(((...))))))..')
-        self.assertTrue(abs(mfe - (-6.40)) < 0.00001)
+        self.assertTrue(abs(mfe - (-6.000000)) < 0.00001)
 
         structure, gfe = RNA.seq_pf_fold(sequence)
         self.assertTrue(structure == '(((.(({...))})))..')
-        self.assertTrue(abs(gfe - (-6.828082)) < 0.00001)
+        self.assertTrue(abs(gfe - (-6.504920)) < 0.00001)
 
     def test_suboptimal(self):
         """
 
         """
         sequence = 'CGCAGGGAUACCCGCGCC'
-        sol_tuples = RNA.seq_subopt(sequence, 4.0, sort=True)
-        expected_sol_tuples = (('(((.(((...))))))..', -6.40),
-                               ('(((.((....)).)))..', -6.30),
-                               ('(((.((.....)))))..', -4.30),
-                               ('.((.(((...)))))...', -4.30),
-                               ('.((.((....)).))...', -4.20),
-                               ('.((.(((...)))..)).', -4.20),
-                               ('((..(((...))).))..', -3.30),
-                               ('.((..((....))..)).', -3.20),
-                               ('(((..((....)))))..', -3.00),
-                               ('....(((...))).....', -2.50),
-                               ('((..((....))..))..', -2.40))
+        # delta is chosen to avoid the degenerate structures
+        sol_tuples = RNA.seq_subopt(sequence, 1.35, sort=True)
+        expected_sol_tuples = (('(((.(((...))))))..', -6.000000),
+                               ('(((.((....)).)))..', -5.900000),
+                               ('.((.(((...)))))...', -4.700000))
 
         for i, s in enumerate(sol_tuples):
             self.assertTrue(s[0] == expected_sol_tuples[i][0])
@@ -54,9 +48,9 @@ class viennaRNATest(unittest.TestCase):
         structure = '(((.((.....)))))..'
 
         energy = RNA.seq_eval(sequence, structure, T=37.0)
-        self.assertTrue(abs(energy - (-4.30)) < 0.00001)
+        self.assertTrue(abs(energy - (-3.900000)) < 0.00001)
         energy = RNA.seq_eval(sequence, structure, T=15.0)
-        self.assertTrue(abs(energy - (-7.05)) < 0.00001)
+        self.assertTrue(abs(energy - (-6.590000)) < 0.00001)
 
     def test_compatibility_check(self):
         """
@@ -69,7 +63,7 @@ class viennaRNATest(unittest.TestCase):
         sequence = 'AAUAGGGAUACCCGCGCC'
         self.assertFalse(RNA.seq_str_compatible(sequence, structure))
         energy = RNA.seq_eval(sequence, structure)
-        self.assertTrue(abs(energy - (6.30)) < 0.00001)
+        self.assertTrue(abs(energy - (6.300000)) < 0.00001)
 
     def test_inverse_fold(self):
         """
