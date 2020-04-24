@@ -2,6 +2,7 @@ import ctypes
 import ctypes.util
 import os
 
+
 # free memory allocated in c
 _free_c_pointer = ctypes.CDLL(ctypes.util.find_library('c')).free
 _free_c_pointer.argtypes = [ctypes.c_void_p, ]
