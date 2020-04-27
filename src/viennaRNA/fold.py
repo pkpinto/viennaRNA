@@ -5,101 +5,70 @@ import os
 
 # free memory allocated in c
 _free_c_pointer = ctypes.CDLL(ctypes.util.find_library('c')).free
-_free_c_pointer.argtypes = [ctypes.c_void_p, ]
-
+_free_c_pointer.argtypes = [ctypes.c_void_p,]
 
 # compiled library file path
 _vienna_clib = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'viennarna.so')
 
 
-# float get_T(void)
-_get_T = ctypes.CDLL(_vienna_clib).get_T
-_get_T.restype = ctypes.c_float
+# float get_temperature(void)
+_get_temperature = ctypes.CDLL(_vienna_clib).get_temperature
+_get_temperature.restype = ctypes.c_float
+
+# void set_temperature(float)
+_set_temperature = ctypes.CDLL(_vienna_clib).set_temperature
+_set_temperature.argtypes = [ctypes.c_float,]
 
 
-# void set_T(float)
-_set_T = ctypes.CDLL(_vienna_clib).set_T
-_set_T.argtypes = [ctypes.c_float, ]
+# float* sequence_fold(const char*, char*)
+_sequence_fold = ctypes.CDLL(_vienna_clib).sequence_fold
+_sequence_fold.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+_sequence_fold.restype = ctypes.c_float
+
+def sequence_fold(sequence, T=37.0):
+    _set_temperature(T)
+
+    structure = ctypes.c_char_p(''.encode('ascii'))
+    mfe = _sequence_fold(sequence.encode('ascii'), structure)
+
+    return (structure.value.decode('utf-8'), mfe)
 
 
-# char* seq_fold(const char*, float*)
-_seq_fold = ctypes.CDLL(_vienna_clib).seq_fold
-_seq_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
-# if restype is c_char_p python will convert it to a str
-# and no free'ing is possible
-_seq_fold.restype = ctypes.c_void_p
+# char* pf_sequence_fold(const char*, float*)
+_pf_sequence_fold = ctypes.CDLL(_vienna_clib).pf_fold
+_pf_sequence_fold.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+_pf_sequence_fold.restype = ctypes.c_float
 
+def pf_sequence_fold(sequence, T=37.0):
+    _set_temperature(T)
 
-def seq_fold(sequence, T=37.0):
-    """
-    Wrapper to seq_fold
-    """
-    default_T = _get_T()
-    if T != default_T:
-        _set_T(T)
+    structure = ctypes.c_char_p(''.encode('ascii'))
+    gfe = _pf_sequence_fold(sequence.encode('ascii'), structure)
 
-    mfe = ctypes.c_float()
-    c_structure = _seq_fold(sequence.encode('ascii'), ctypes.byref(mfe))
-    structure = ctypes.cast(c_structure, ctypes.c_char_p).value
-    _free_c_pointer(c_structure)
-
-    if T != default_T:
-        _set_T(default_T)
-    return (structure.decode('utf-8'), mfe.value)
-
-
-# char* seq_pf_fold(const char*, float*)
-_seq_pf_fold = ctypes.CDLL(_vienna_clib).seq_pf_fold
-_seq_pf_fold.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_float)]
-# if restype is c_char_p python will convert it to a str
-# and no free'ing is possible
-_seq_pf_fold.restype = ctypes.c_void_p
-
-
-def seq_pf_fold(sequence, T=37.0):
-    """
-    Wrapper to seq_pf_fold
-    """
-    default_T = _get_T()
-    if T != default_T:
-        _set_T(T)
-
-    gfe = ctypes.c_float()
-    c_structure = _seq_pf_fold(sequence.encode('ascii'), ctypes.byref(gfe))
-    structure = ctypes.cast(c_structure, ctypes.c_char_p).value
-    _free_c_pointer(c_structure)
-
-    if T != default_T:
-        _set_T(default_T)
-    return (structure.decode('utf-8'), gfe.value)
+    return (structure.value.decode('utf-8'), gfe)
 
 
 class _SOLUTION(ctypes.Structure):
-    """
+    '''
     Implementation of the SOLUTION struct.
+    Deprecated (RNALib 2.4.14) but it's the return value of subopt (which is NOT deprecated)
 
     typedef struct {
         float energy;
-        char *structure;
+        char* structure;
     } SOLUTION;
-    """
+    '''
     _fields_ = [('energy', ctypes.c_float), ('c_structure', ctypes.c_void_p)]
 
-# SOLUTION* seq_subopt(const char*, float)
-_seq_subopt = ctypes.CDLL(_vienna_clib).seq_subopt
-_seq_subopt.argtypes = [ctypes.c_char_p, ctypes.c_float]
-_seq_subopt.restype = ctypes.POINTER(_SOLUTION)
+# SOLUTION* subopt_structures(const char*, float)
+_subopt_structures = ctypes.CDLL(_vienna_clib).subopt_structures
+_subopt_structures.argtypes = [ctypes.c_char_p, ctypes.c_float]
+_subopt_structures.restype = ctypes.POINTER(_SOLUTION)
 
+def subopt_structures(sequence, delta, sort=False, T=37.0):
+    _set_temperature(T)
 
-def seq_subopt(sequence, delta, sort=False, T=37.0):
-    """
-    Wrapper to seq_subopt
-    """
-    default_T = _get_T()
-    if T != default_T:
-        _set_T(T)
-
-    sol = _seq_subopt(sequence.encode('ascii'), ctypes.c_float(delta))
+    sol = _subopt_structures(sequence.encode('ascii'), ctypes.c_float(delta))
 
     sol_tuples = set()
     for s in sol:
@@ -109,50 +78,30 @@ def seq_subopt(sequence, delta, sort=False, T=37.0):
         _free_c_pointer(s.c_structure)
     _free_c_pointer(sol)
 
-    if T != default_T:
-        _set_T(default_T)
-
     if sort:
         return sorted(sol_tuples, key=lambda s: s[1])
     else:
         return sol_tuples
 
 
-# float seq_eval(const char*, const char*)
-_seq_eval = ctypes.CDLL(_vienna_clib).seq_eval
-_seq_eval.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-_seq_eval.restype = ctypes.c_float
+# float eval_structure(const char*, const char*)
+_eval_structure = ctypes.CDLL(_vienna_clib).eval_structure
+_eval_structure.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+_eval_structure.restype = ctypes.c_float
 
+def eval_structure(sequence, structure, T=37.0):
+    _set_temperature(T)
 
-def seq_eval(sequence, structure, T=37.0):
-    """
-    Wrapper to seq_eval
-    """
-    default_T = _get_T()
-    if T != default_T:
-        _set_T(T)
-
-    energy = _seq_eval(sequence.encode('ascii'), structure.encode('ascii'))
-
-    if T != default_T:
-        _set_T(default_T)
-    return energy
+    return _eval_structure(sequence.encode('ascii'), structure.encode('ascii'))
 
 
 # float str_inverse(char*, const char*, int)
-_str_inverse = ctypes.CDLL(_vienna_clib).str_inverse
-_str_inverse.argtypes = [ctypes.c_char_p, ctypes.c_char_p,
-                         ctypes.c_uint, ctypes.c_int]
-_str_inverse.restype = ctypes.c_float
+_sequence_design = ctypes.CDLL(_vienna_clib).sequence_design
+_sequence_design.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_uint, ctypes.c_int]
+_sequence_design.restype = ctypes.c_float
 
-
-def str_inverse(seed, structure, rng_seed=None, give_up=False, T=37.0):
-    """
-    Wrapper to str_inverse
-    """
-    default_T = _get_T()
-    if T != default_T:
-        _set_T(T)
+def sequence_design(seed, structure, rng_seed=None, give_up=False, T=37.0):
+    _set_temperature(T)
 
     if not rng_seed:
         # seeding identical to cpython random.seed
@@ -160,29 +109,18 @@ def str_inverse(seed, structure, rng_seed=None, give_up=False, T=37.0):
         rng_seed = long(time.time() * 256)  # use fractional seconds
 
     sequence = ctypes.create_string_buffer(str(seed).encode('ascii'))
-    dist = _str_inverse(sequence, structure.encode('ascii'), rng_seed, 1 if give_up else 0)
+    dist = _sequence_design(sequence, structure.encode('ascii'), rng_seed, 1 if give_up else 0)
 
-    if T != default_T:
-        _set_T(default_T)
     return (sequence.value.decode('utf-8'), dist)
 
 
 # float str_pf_inverse(char*, const char*, int, float)
-_str_pf_inverse = ctypes.CDLL(_vienna_clib).str_pf_inverse
-_str_pf_inverse.argtypes = [ctypes.c_char_p, ctypes.c_char_p,
-                            ctypes.c_long, ctypes.c_uint,
-                            ctypes.c_float]
-_str_pf_inverse.restype = ctypes.c_float
+_pf_sequence_design = ctypes.CDLL(_vienna_clib).pf_sequence_design
+_pf_sequence_design.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_long, ctypes.c_uint, ctypes.c_float]
+_pf_sequence_design.restype = ctypes.c_float
 
-
-def str_pf_inverse(seed, structure, rng_seed=None, give_up=False,
-                   delta_target=0.0, T=37.0):
-    """
-    Wrapper to str_pf_inverse
-    """
-    default_T = _get_T()
-    if T != default_T:
-        _set_T(T)
+def pf_sequence_design(seed, structure, rng_seed=None, give_up=False, delta_target=0.0, T=37.0):
+    _set_temperature(T)
 
     if not rng_seed:
         # seeding identical to cpython random.seed
@@ -190,9 +128,6 @@ def str_pf_inverse(seed, structure, rng_seed=None, give_up=False,
         rng_seed = long(time.time() * 256)  # use fractional seconds
 
     sequence = ctypes.create_string_buffer(seed)
-    dist = _str_pf_inverse(sequence.encode('ascii'), structure.encode('ascii'), rng_seed,
-                           1 if give_up else 0, delta_target)
+    dist = _pf_sequence_design(sequence.encode('ascii'), structure.encode('ascii'), rng_seed, 1 if give_up else 0, delta_target)
 
-    if T != default_T:
-        _set_T(default_T)
     return (sequence.value.decode('utf-8'), dist)

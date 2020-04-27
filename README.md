@@ -4,16 +4,18 @@
 
 Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest latest stable release is Version 2.4.14 from August 13th 2019. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
 
-This library allows access to fold, pf_fold, subopt, energy_of_structure, inverse_fold and inverse_pf_fold. Additional functions are available for sequence/structure analysis.
+This library allows access to a small subset of the RNALib functions: vrna_fold, vrna_pf_fold, subopt, vrna_eval_structure_simple, inverse_fold and inverse_pf_fold. Version 4.0 of this API now references the new (thread-safe) RNALib interface where possible. The python function calls have been changed *in a not backwards compatible* way to highlight the new calls:
 
-| RNAlib function      | python call         |
-|----------------------|---------------------|
-| fold                 | seq_fold            |
-| pf_fold              | seq_pf_fold         |
-| subopt               | seq_subopt          |
-| energy_of_structure  | seq_eval            |
-| inverse_fold         | str_inverse         |
-| inverse_pf_fold      | str_pf_inverse      |
+| RNAlib function             | python call          |
+|-----------------------------|----------------------|
+| vrna_fold                   |    sequence_fold     |
+| vrna_pf_fold                | pf_sequence_fold     |
+| subopt                      | subopt_structures    |
+| vrna_eval_structure_simple  | eval_structure       |
+| inverse_fold                |    sequence_design   |
+| inverse_pf_fold             | pf_sequence_design   |
+
+Additional functions are available for sequence/structure analysis:
 
 | RNAlib               | python call         |
 |----------------------|---------------------|
@@ -29,8 +31,8 @@ pip install .
 
 Ensure that ViennaRNA ([RNAlib](https://www.tbi.univie.ac.at/RNA/)) has been installed in a location available to the c compiler:
 ```
-export LIBRARY_PATH=$C_INCLUDE_PATH;<ViennaRNA base path>/lib"
-export C_INCLUDE_PATH=$C_INCLUDE_PATH;<ViennaRNA base path>/include"
+export LIBRARY_PATH="$LIBRARY_PATH:<RNALib base path>/lib"
+export C_INCLUDE_PATH="$C_INCLUDE_PATH:<RNALib base path>/include"
 ```
 
 ## Tests
