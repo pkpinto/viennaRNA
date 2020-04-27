@@ -26,11 +26,9 @@ class _build_ext(build_ext):
 if platform == 'darwin':
     module = Extension('viennaRNA.viennarna', sources=['src/viennaRNA/viennarna.c'],
                        libraries=['RNA'],)
-elif platform == 'linux2':
+elif platform == 'linux':
     module = Extension('viennaRNA.viennarna', sources=['src/viennaRNA/viennarna.c'],
-                       libraries=['RNA'],
-                       extra_compile_args=['-std=c99'],
-                       extra_link_args=['-fopenmp'],)
+                       libraries=['RNA'], extra_link_args=['-fopenmp', '-fno-lto', '-lmpfr', '-lgmp'],)
 else:
     raise OSError('OS not supported.')
 
