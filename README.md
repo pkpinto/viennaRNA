@@ -5,7 +5,7 @@
 [![Code Coverage](https://codecov.io/gh/pkpinto/viennaRNA/branch/master/graph/badge.svg)](https://codecov.io/gh/pkpinto/viennaRNA)
 [![Join the chat at https://gitter.im/pkpintoHUB/viennaRNA](https://badges.gitter.im/pkpintoHUB/viennaRNA.svg)](https://gitter.im/pkpintoHUB/viennaRNA?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest latest stable release is Version 2.4.14 from August 13th 2019. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
+Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest stable release is version 2.4.14 from August 13th 2019. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
 
 This library allows access to a small subset of the RNALib functions: vrna_fold, vrna_pf_fold, subopt, vrna_eval_structure_simple, inverse_fold and inverse_pf_fold. Version 4.0 of this API now references the new (thread-safe) RNALib interface where possible. The python function calls have been changed *in a not backwards compatible* way to highlight the new calls:
 
