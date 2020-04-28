@@ -29,6 +29,10 @@ class TestRNA:
             assert(s[0] == expected_sol_tuples[i][0])
             assert(abs(s[1] - expected_sol_tuples[i][1]) < 0.00001)
 
+        sols_in_delta = len(sol_tuples)
+        sol_tuples = vrna.subopt_structures(sequence, 1.35, sort=False)
+        assert(len(sol_tuples) == sols_in_delta)
+
     def test_eval(self):
 
         sequence = 'CGCAGGGAUACCCGCGCC'
