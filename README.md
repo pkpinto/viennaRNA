@@ -7,6 +7,8 @@
 
 Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest stable release is version 2.4.14 from August 13th 2019. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
 
+### Python wrapper
+
 This library allows access to a small subset of the RNALib functions: vrna_fold, vrna_pf_fold, subopt, vrna_eval_structure_simple, inverse_fold and inverse_pf_fold. Version 4.0 of this API now references the new (thread-safe) RNALib interface where possible. The python function calls have been changed *in a not backwards compatible* way to highlight the new calls:
 
 | RNAlib function             | python call          |
@@ -25,6 +27,15 @@ Additional functions are available for sequence/structure analysis:
 | n.a.                 | str_base_pairs      |
 | n.a.                 | seq_str_compatible  |
 
+### REST API
+
+Additionally, this project also implements a Flask web server that serves access to the function calls above via a REST API. At the moment, the simplest way to run the web server (post the installation described below) is to use flask directly:
+```
+export FLASK_APP=wsgi.py 
+python -m flask run
+```
+from the viennaRNA_api directory.
+
 ## Installation
 
 Use pip to install this package, after cloning from github:
@@ -36,6 +47,11 @@ Ensure that ViennaRNA ([RNAlib](https://www.tbi.univie.ac.at/RNA/)) has been ins
 ```
 export LIBRARY_PATH="$LIBRARY_PATH:<RNALib base path>/lib"
 export C_INCLUDE_PATH="$C_INCLUDE_PATH:<RNALib base path>/include"
+```
+
+To install the API server, extra libraries need installing. This can be done by issuing:
+```
+pip install ".[api]"
 ```
 
 ## Tests
