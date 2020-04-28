@@ -1,5 +1,8 @@
 # viennaRNA
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/pkpinto/viennaRNA.svg?branch=master)](https://travis-ci.org/pkpinto/viennaRNA)
+[![Code Coverage](https://codecov.io/gh/pkpinto/viennaRNA/branch/master/graph/badge.svg)](https://codecov.io/gh/pkpinto/viennaRNA)
 [![Join the chat at https://gitter.im/pmsppinto/viennaRNA](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pmsppinto/viennaRNA?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest latest stable release is Version 2.4.14 from August 13th 2019. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
