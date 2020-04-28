@@ -1,0 +1,23 @@
+language: python
+python:
+  - 3.7
+before_install:
+  - pip install --upgrade pip
+  # to interact with codecov
+  - pip install codecov
+  # download RNALib
+  - wget https://www.tbi.univie.ac.at/RNA/download/ubuntu/ubuntu_16_04/viennarna-dev_2.4.14-1_amd64.deb
+  # change permissions so _apt user can install it
+  - sudo chown -R _apt:root /home/travis/build/pkpinto/viennaRNA/viennarna-dev_2.4.14-1_amd64.deb
+  # apt-get can install it and fulfill dependencies
+  # mpfr is not declared by RNAlib
+  - sudo apt-get install libmpfr-dev
+  - sudo apt-get install ./viennarna-dev_2.4.14-1_amd64.deb
+install:
+  # include extras_require test
+  - pip install ".[test]"
+script:
+  - pytest tests/ --cov=viennaRNA
+# push the results to codecov
+after_success:
+  - codecov
