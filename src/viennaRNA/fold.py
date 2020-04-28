@@ -106,7 +106,7 @@ def sequence_design(seed, structure, rng_seed=None, give_up=False, T=37.0):
     if not rng_seed:
         # seeding identical to cpython random.seed
         import time
-        rng_seed = long(time.time() * 256)  # use fractional seconds
+        rng_seed = int(time.time() * 256)  # use fractional seconds
 
     sequence = ctypes.create_string_buffer(str(seed).encode('ascii'))
     dist = _sequence_design(sequence, structure.encode('ascii'), rng_seed, 1 if give_up else 0)
@@ -125,9 +125,9 @@ def pf_sequence_design(seed, structure, rng_seed=None, give_up=False, delta_targ
     if not rng_seed:
         # seeding identical to cpython random.seed
         import time
-        rng_seed = long(time.time() * 256)  # use fractional seconds
+        rng_seed = int(time.time() * 256)  # use fractional seconds
 
-    sequence = ctypes.create_string_buffer(seed)
-    dist = _pf_sequence_design(sequence.encode('ascii'), structure.encode('ascii'), rng_seed, 1 if give_up else 0, delta_target)
+    sequence = ctypes.create_string_buffer(str(seed).encode('ascii'))
+    dist = _pf_sequence_design(sequence, structure.encode('ascii'), rng_seed, 1 if give_up else 0, delta_target)
 
     return (sequence.value.decode('utf-8'), dist)

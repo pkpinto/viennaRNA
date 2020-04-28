@@ -67,11 +67,21 @@ class TestRNA:
         assert(abs(energy - (6.30)) < 0.00001)
 
         # find target sequence stable in target structure
-        target_sequence, dist = vrna.sequence_design(sequence, target_structure, rng_seed=12345)
+        target_sequence, _ = vrna.sequence_design(sequence, target_structure, rng_seed=12345)
         assert(target_sequence == 'AGUAGGGAUAGCCGCUCC')
-        assert(abs(dist) < 0.00001)
-
         # confirm target structure is ground state of target sequence
         structure, mfe = vrna.sequence_fold(target_sequence)
         assert(structure == target_structure)
         assert(abs(mfe - (-1.600000)) < 0.00001)
+        # and without rng seed
+        # it's stochastic, we cannot guarantee the target, only that it differs from sequence
+        target_sequence, _ = vrna.sequence_design(sequence, target_structure)
+        assert(target_sequence != sequence)
+
+        # find target sequence stable in target structure
+        target_sequence, _ = vrna.pf_sequence_design(sequence, target_structure, rng_seed=12345)
+        assert(target_sequence == 'GCGAGCUCAAUGCCGCAA')
+        # and without rng seed
+        # it's stochastic, we cannot guarantee the target, only that it differs from sequence
+        target_sequence, _ = vrna.pf_sequence_design(sequence, target_structure)
+        assert(target_sequence != sequence)
