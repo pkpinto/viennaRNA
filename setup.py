@@ -6,7 +6,10 @@ from sys import platform
 from setuptools import setup, find_namespace_packages, Extension
 from setuptools.command.build_ext import build_ext
 
-
+API_REQUIRES = [
+    # rest api
+    'flask', 'flask-restx',
+]
 TEST_REQUIRES = [
     # testing and coverage
     'pytest<5.3', 'coverage', 'pytest-cov', 'pylint',
@@ -34,7 +37,7 @@ else:
 
 setup(
     name='viennaRNA',
-    version='4.0',
+    version='4.1-beta',
     description='Wrapper for the Vienna RNA folding library',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -57,6 +60,7 @@ setup(
     packages=find_namespace_packages(where='src'),
     install_requires=[],
     extras_require={
+        'api': API_REQUIRES,
         'test': TEST_REQUIRES,
     },
 )
