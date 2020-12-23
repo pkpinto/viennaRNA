@@ -28,8 +28,6 @@ class _build_ext(build_ext):
 
 if platform == 'darwin':
     module = Extension('viennaRNA.viennarna', sources=['src/viennaRNA/viennarna.c'],
-                       library_dirs=['../ViennaRNA-2.4.14/lib'],
-                       include_dirs=['../ViennaRNA-2.4.14/include'],
                        libraries=['RNA'])
 elif platform == 'linux':
     module = Extension('viennaRNA.viennarna', sources=['src/viennaRNA/viennarna.c'],
@@ -39,7 +37,7 @@ else:
 
 setup(
     name='viennaRNA',
-    version='4.1-beta',
+    version='4.2b',
     description='Wrapper for the Vienna RNA folding library',
     long_description=long_description,
     long_description_content_type='text/markdown',

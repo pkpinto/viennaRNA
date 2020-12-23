@@ -104,3 +104,6 @@ pyvenv.cfg
 
 # VS Code
 .vscode
+
+# Mac
+.DS_Store

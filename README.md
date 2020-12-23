@@ -5,7 +5,7 @@
 [![Code Coverage](https://codecov.io/gh/pkpinto/viennaRNA/branch/master/graph/badge.svg)](https://codecov.io/gh/pkpinto/viennaRNA)
 [![Join the chat at https://gitter.im/pkpintoHUB/viennaRNA](https://badges.gitter.im/pkpintoHUB/viennaRNA.svg)](https://gitter.im/pkpintoHUB/viennaRNA?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest stable release is version 2.4.14 from August 13th 2019. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
+Python wrapper for the ViennaRNA Package ([RNAlib](https://www.tbi.univie.ac.at/RNA/)). At this time, the lastest stable release is version 2.4.17 from November 25th, 2020. Its source code can be found in https://github.com/ViennaRNA/ViennaRNA.
 
 ### Python wrapper
 
