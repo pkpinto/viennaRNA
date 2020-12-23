@@ -8,7 +8,7 @@ from setuptools.command.build_ext import build_ext
 
 API_REQUIRES = [
     # rest api
-    'flask', 'flask-restx',
+    'fastapi',
 ]
 TEST_REQUIRES = [
     # testing and coverage
@@ -28,10 +28,12 @@ class _build_ext(build_ext):
 
 if platform == 'darwin':
     module = Extension('viennaRNA.viennarna', sources=['src/viennaRNA/viennarna.c'],
-                       libraries=['RNA'],)
+                       library_dirs=['../ViennaRNA-2.4.14/lib'],
+                       include_dirs=['../ViennaRNA-2.4.14/include'],
+                       libraries=['RNA'])
 elif platform == 'linux':
     module = Extension('viennaRNA.viennarna', sources=['src/viennaRNA/viennarna.c'],
-                       libraries=['RNA'], extra_link_args=['-fopenmp', '-fno-lto', '-lmpfr', '-lgmp'],)
+                       libraries=['RNA', 'mpfr', 'gmp'], extra_link_args=['-fopenmp', '-fno-lto'])
 else:
     raise OSError('OS not supported.')
 
