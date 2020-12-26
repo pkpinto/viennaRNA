@@ -1,43 +1,47 @@
-from flask import current_app
-from flask_restx import Api, Resource, fields
+from typing import Optional
+
+from fastapi import APIRouter
 
 import viennaRNA as vrna
 
 
-api = Api(current_app)
-ns = api.namespace('viennarna/v1', description='viennaRNA API')
+default_router = APIRouter(prefix='/viennarna/v1')
 
-# input
-fold_request = api.parser()
-fold_request.add_argument('sequence', type=str, required=True, help='RNA sequence', location='form')
-fold_request.add_argument('temperature', type=float, help='Termodynamic temperature', default=37, location='form')
 
-# output
-fold_result = api.model('FoldResult', {
-    'structure': fields.String(description='Folded structure'),
-    'energy': fields.Float(description='Energy of the fold (kcal/mol)'),
-})
+@default_router.get(
+    '/sequence-fold/{sequence}',
+    summary='Compute folded structure and associated minimum free energy for a given sequence (at a specified temperature)',
+)
+async def sequence_fold(sequence: str, T: Optional[float] = 37.0):
+    structure, mfe = vrna.sequence_fold(sequence, T=T)
+    return {'sequence': sequence, 'temperature': T, 'structure': structure, 'free_energy': mfe}
 
-@ns.route('/sequence_fold')
-@ns.doc(parser=fold_request)
-class SequenceFold(Resource):
-    ''' '''
 
-    @ns.marshal_with(fold_result, code=200)
-    def post(self):
-        ''' '''
-        args = fold_request.parse_args()
-        structure, mfe = vrna.sequence_fold(args['sequence'], T=args['temperature'])
-        return {'structure': structure, 'energy': mfe}
+@default_router.get(
+    '/sequence-fold/{sequence}/{structure}',
+    summary='Compute free energy of an already folded structure (at a specified temperature)'
+)
+async def eval_structure(sequence: str, structure: str, T: Optional[float] = 37.0):
+    energy = vrna.eval_structure(sequence, structure, T=T)
+    return {'sequence': sequence, 'temperature': T, 'structure': structure, 'energy': energy}
 
-@ns.route('/pf_sequence_fold')
-@ns.doc(parser=fold_request)
-class PFSequenceFold(Resource):
-    ''' '''
 
-    @ns.marshal_with(fold_result, code=200)
-    def post(self):
-        ''' '''
-        args = fold_request.parse_args()
-        structure, gfe = vrna.pf_sequence_fold(args['sequence'], T=args['temperature'])
-        return {'structure': structure, 'energy': gfe}
+@default_router.get(
+    '/pf-sequence-fold/{sequence}',
+    summary='Compute pairing propensity and ensemble free energy for a given sequence (at a specified temperature)',
+)
+async def pf_sequence_fold(sequence: str, T: Optional[float] = 37.0):
+    structure, gfe = vrna.pf_sequence_fold(sequence, T=T)
+    return {'sequence': sequence, 'temperature': T, 'structure': structure, 'free_energy': gfe}
+
+
+@default_router.get(
+    '/subopt-structures/{sequence}',
+    summary='Compute all suboptimal secondary structures within a `delta` of the optimum'
+)
+async def subopt_structures(sequence: str, delta: float, T: Optional[float] = 37.0):
+    sol_tuples = vrna.subopt_structures(sequence, delta, sort=True, T=T)
+    return {
+        'sequence': sequence, 'temperature': T,
+        'fold_results': [{'structure': structure, 'energy': energy} for structure, energy in sol_tuples]
+    }

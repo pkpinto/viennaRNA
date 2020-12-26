@@ -70,11 +70,11 @@ def subopt_structures(sequence, delta, sort=False, T=37.0):
 
     sol = _subopt_structures(sequence.encode('ascii'), ctypes.c_float(delta))
 
-    sol_tuples = set()
+    sol_tuples = list()
     for s in sol:
         if s.c_structure is None:
             break
-        sol_tuples.add((ctypes.cast(s.c_structure, ctypes.c_char_p).value.decode('utf-8'), s.energy))
+        sol_tuples.append((ctypes.cast(s.c_structure, ctypes.c_char_p).value.decode('utf-8'), s.energy))
         _free_c_pointer(s.c_structure)
     _free_c_pointer(sol)
 
